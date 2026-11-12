@@ -4,7 +4,7 @@
   if (window.top !== window.self) return;
   const KEY = 'themeai.pixel.v1';
   const IMAGE_KEY = 'themeai.pixel.wallpaper.v1';
-  const VERSION = '1.1.1';
+  const VERSION = '1.1.2';
   const SCRIPT_URL = document.currentScript?.src;
   const PALETTES = __PALETTES__;
   const ASSETS = __ASSETS__;
@@ -209,10 +209,10 @@
         main:p.sky+'88',surface:p.surface+'eb',raised:p.surface,message:p.surface+'ee',sidebar:p.sky+'b8',
         hsl:p.hsl,'hsl-raised':p.hsl.replace(/\d+%$/, '17%'),glow:settings.glow/100,
         ...(active==='custom'?{
-          sky:'#10131d',main:'transparent',solid:'rgb(22 26 38 / .28)',
-          surface:'rgb(22 26 38 / .18)',raised:'rgb(255 255 255 / .12)',
-          message:'rgb(22 26 38 / .34)',sidebar:'rgb(22 26 38 / .22)',
-          hsl:'228 27% 8% / .22','hsl-raised':'228 20% 16% / .30'
+          sky:'#10131d',main:'transparent',solid:'rgb(18 24 36 / .82)',
+          surface:'rgb(18 24 36 / .72)',raised:'rgb(29 37 53 / .86)',
+          message:'rgb(18 24 36 / .80)',sidebar:'rgb(15 21 33 / .80)',
+          hsl:'228 27% 8% / .78','hsl-raised':'228 20% 16% / .86'
         }:{})};
       for(const [key,value] of Object.entries(values)) root.style.setProperty('--ta-'+key,String(value));
       for(const [key,value] of Object.entries({accent:p.accent,rgb:p.rgb,sky:values.sky,glow:settings.glow/100})) scene.style.setProperty('--'+key,String(value));

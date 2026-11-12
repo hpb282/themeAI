@@ -158,10 +158,10 @@ html[data-themeai][data-themeai-platform="claude"] :is(body, [data-cds-theme]) {
   --df-z2: var(--ta-hsl-raised) !important;
   --df-z3: var(--ta-hsl-raised) !important;
 }
-/* Personal wallpaper: one lightly tinted pane with blur and a soft reflection. */
+/* Personal wallpaper: dark frosted panes stay readable over bright photos. */
 html[data-themeai="custom"] {
-  --ta-glass-border: rgb(255 255 255 / .28);
-  --ta-glass-sheen: linear-gradient(135deg, rgb(255 255 255 / .12), rgb(255 255 255 / .02) 45%, rgb(255 255 255 / .06));
+  --ta-glass-border: rgb(255 255 255 / .18);
+  --ta-glass-sheen: linear-gradient(135deg, rgb(255 255 255 / .04), transparent 45%, rgb(255 255 255 / .02));
 }
 html[data-themeai="custom"] :is([data-themeai-composer], [data-themeai-sidebar], [data-themeai-toolbar], [role="menu"], [role="listbox"]) {
   -webkit-backdrop-filter: blur(20px) saturate(135%) !important;
@@ -199,9 +199,9 @@ html[data-themeai="custom"] :is([data-themeai-composer], [data-themeai-sidebar])
 html[data-themeai="custom"] :is([data-themeai-composer], [data-themeai-sidebar]) [data-themeai-toolbar] {
   border-color: transparent !important;
 }
-/* Unsupported blur still gets translucent glass, with enough tint for the labels. */
+/* Keep the tint when blur is unavailable; do not make the fallback brighter. */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  html[data-themeai="custom"] { --ta-solid: rgb(22 26 38 / .58) !important; }
+  html[data-themeai="custom"] { --ta-solid: rgb(18 24 36 / .92) !important; }
 }
 @media print {
   #themeai-scene, #themeai-ui { display: none !important; }

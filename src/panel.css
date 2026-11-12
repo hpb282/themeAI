@@ -1,6 +1,6 @@
 :host{all:initial;font:15px/1.45 Arial,Helvetica,system-ui,sans-serif;color:#f9f8ff;--accent:#6af1ff;--secondary:#bda1ff}
 /* Match the host controls when a personal wallpaper is selected. */
-:host([data-palette=custom]) :is(.dock,.panel){background:linear-gradient(135deg,#ffffff1f,#ffffff05 45%,#ffffff0f),#161a2647;-webkit-backdrop-filter:blur(20px) saturate(135%);backdrop-filter:blur(20px) saturate(135%);border:1px solid #ffffff47;box-shadow:inset 0 1px 0 #ffffff33,0 12px 32px #00000024}
+:host([data-palette=custom]) :is(.dock,.panel){background:linear-gradient(135deg,#ffffff0a,transparent 45%,#ffffff05),#121824e0;-webkit-backdrop-filter:blur(20px) saturate(135%);backdrop-filter:blur(20px) saturate(135%);border:1px solid #ffffff2e;box-shadow:inset 0 1px 0 #ffffff1f,0 12px 32px #00000024}
 :host([data-palette=custom]) .dock{border-radius:16px}
 :host([data-palette=custom]) .frame{border-radius:24px;padding:0;filter:none}
 :host([data-palette=custom]) .frame::before{display:none}

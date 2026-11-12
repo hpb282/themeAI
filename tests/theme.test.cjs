@@ -22,6 +22,13 @@ function glassFixture(platform) {
   </style></head><body><div id="app"><aside id="sidebar">Codex<br>New chat<br>Tasks<br>Library</aside><main><header id="glass-header">Workspace</header><h1>What should we build?</h1><div class="compose-group"><div id="environment-toolbar" role="toolbar"><button type="button" id="environment">Cloud · Default environment</button></div>${composer}<div class="token-surface">Native panel token</div><div class="hsl-surface">Native HSL token</div><div role="menu" id="glass-menu" hidden>Native environment menu</div><p class="danger">Status remains red</p><div class="monaco-editor"><header id="code-header">Editor</header><textarea aria-label="Code editor">const answer = 42;</textarea></div></div></main></div><script>window.submitCount=0;document.getElementById('glass-composer').addEventListener('submit',e=>{e.preventDefault();window.submitCount++});${platform==='codex'?"document.getElementById('glass-send').addEventListener('click',()=>window.submitCount++);":''}document.getElementById('environment').addEventListener('click',()=>document.getElementById('glass-menu').hidden=false);</script></body></html>`;
 }
 const alpha=color=>{const parts=color.match(/[\d.]+/g).map(Number);return parts.length===4?parts[3]:1;};
+const rgba=color=>color.match(/[\d.]+/g).map(Number);
+const composite=(foreground,background)=>foreground.slice(0,3).map((value,index)=>value*(foreground[3]??1)+background[index]*(1-(foreground[3]??1)));
+function contrast(foreground,background) {
+  const luminance=rgb=>rgb.slice(0,3).map(value=>value/255).map(value=>value<=.04045?value/12.92:((value+.055)/1.055)**2.4).reduce((sum,value,index)=>sum+value*[.2126,.7152,.0722][index],0);
+  const a=luminance(foreground),b=luminance(background);
+  return (Math.max(a,b)+.05)/(Math.min(a,b)+.05);
+}
 (async()=>{
   const executable=process.env.CHROMIUM_PATH||(['/usr/bin/chromium','/usr/bin/chromium-browser'].find(p=>fs.existsSync(p)));
   const browser=await chromium.launch({headless:true,...(executable?{executablePath:executable}:{}),args:['--no-sandbox']});
@@ -143,7 +150,7 @@ const alpha=color=>{const parts=color.match(/[\d.]+/g).map(Number);return parts.
   await photo.waitForFunction(key=>JSON.parse(localStorage.getItem(key))?.customFit==='contain',KEY);
   await photo.reload();await photo.addScriptTag({path:runtime});
   await photo.waitForFunction(()=>document.documentElement.dataset.themeai==='custom');
-  assert(alpha(await photo.locator('[data-themeai-composer]').evaluate(e=>getComputedStyle(e).backgroundColor))<.6);
+  assert(alpha(await photo.locator('[data-themeai-composer]').evaluate(e=>getComputedStyle(e).backgroundColor))>=.7);
   const savedSource=await photo.locator('#themeai-scene').locator('.terrain').getAttribute('src');
   assert(savedSource.startsWith('data:image/'));
   await photo.getByRole('button',{name:'Mở cài đặt Pixel Studio',exact:true}).click();
@@ -171,7 +178,7 @@ const alpha=color=>{const parts=color.match(/[\d.]+/g).map(Number);return parts.
     assert.equal(await page.locator('[data-themeai-composer]').count(),1);
     for(const selector of ['#glass-composer','#environment-toolbar','#glass-header','#sidebar','.token-surface',...(platform==='claude'?['.hsl-surface']:[])]) {
       const color=await page.locator(selector).evaluate(e=>getComputedStyle(e).backgroundColor);
-      assert(alpha(color)>0&&alpha(color)<.6,`${platform} ${selector} should be translucent: ${color}`);
+      assert(alpha(color)>=.7&&alpha(color)<1,`${platform} ${selector} should be dark frosted glass: ${color}`);
     }
     for(const selector of ['#glass-composer','#environment-toolbar','#sidebar'])assert.match(await page.locator(selector).evaluate(e=>getComputedStyle(e).backdropFilter),/blur\(/);
     assert.equal(await page.locator('#glass-composer').evaluate(e=>getComputedStyle(e).borderRadius),'24px');
@@ -198,6 +205,29 @@ const alpha=color=>{const parts=color.match(/[\d.]+/g).map(Number);return parts.
     assert.match(await page.locator('#spa-composer').evaluate(e=>getComputedStyle(e).backdropFilter),/blur\(/);
     const dock=page.getByRole('button',{name:'Mở cài đặt Pixel Studio',exact:true});await dock.click();
     assert.match(await page.locator('#themeai-ui').locator('.dock').evaluate(e=>getComputedStyle(e).backdropFilter),/blur\(/);
+    // An all-white uploaded image is the worst case for light conversation text.
+    const whiteImage=await page.evaluate(()=>{const canvas=document.createElement('canvas');canvas.width=32;canvas.height=32;const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,32,32);return canvas.toDataURL('image/png');});
+    await page.locator('#themeai-ui').locator('input[type=file]').setInputFiles({name:'white-wallpaper.png',mimeType:'image/png',buffer:Buffer.from(whiteImage.split(',')[1],'base64')});
+    await page.waitForFunction(()=>document.getElementById('themeai-ui').shadowRoot.querySelector('.custom-name').textContent==='white-wallpaper.png');
+    const colors=await page.evaluate(()=>({
+      veil:getComputedStyle(document.getElementById('themeai-scene').shadowRoot.querySelector('.horizon')).backgroundColor,
+      primary:getComputedStyle(document.querySelector('h1')).color,
+      secondary:getComputedStyle(document.documentElement).getPropertyValue('--text-secondary').trim(),
+      panel:getComputedStyle(document.getElementById('glass-composer')).backgroundColor,
+      sheen:getComputedStyle(document.getElementById('glass-composer')).backgroundImage,
+      studio:getComputedStyle(document.getElementById('themeai-ui').shadowRoot.querySelector('.panel')).backgroundColor
+    }));
+    const canvasColor=composite(rgba(colors.veil),[255,255,255]);
+    assert(contrast(rgba(colors.primary),canvasColor)>=4.5,`${platform}: primary conversation text must be readable over a white photo`);
+    // The host token is a hex value; resolve it through a temporary CSS color.
+    const secondary=await page.evaluate(color=>{const node=document.createElement('span');node.style.color=color;document.body.append(node);const result=getComputedStyle(node).color;node.remove();return result;},colors.secondary);
+    assert(contrast(rgba(secondary),canvasColor)>=4.5,`${platform}: secondary text must be readable over a white photo`);
+    const reflection=Math.max(0,...[...colors.sheen.matchAll(/rgba?\([^)]+\)/g)].map(match=>alpha(match[0])));
+    const panelColor=composite([255,255,255,reflection],composite(rgba(colors.panel),canvasColor));
+    assert(contrast(rgba(secondary),panelColor)>=4.5,`${platform}: frosted input text must retain contrast`);
+    assert(alpha(colors.studio)>=.8,`${platform}: Pixel Studio must have a dark readable backing`);
+    await page.keyboard.press('Escape');await page.setViewportSize({width:1366,height:900});
+    await page.screenshot({path:path.join(resultDir,`white-wallpaper-${platform}.png`)});await dock.click();
     await page.getByRole('button',{name:'Forest',exact:true}).click();
     assert.equal(alpha(await page.locator('#glass-composer').evaluate(e=>getComputedStyle(e).backgroundColor)),1);
     assert.equal(await page.locator('#glass-composer').evaluate(e=>getComputedStyle(e).backdropFilter),'none');
@@ -208,7 +238,7 @@ const alpha=color=>{const parts=color.match(/[\d.]+/g).map(Number);return parts.
     assert.equal(await page.locator('#glass-composer').evaluate(e=>getComputedStyle(e).backdropFilter),'none');
     assert.equal(await page.locator('#themeai-ui').getAttribute('data-palette'),'');
     await page.close();
-    console.log(`PASS ${platform} liquid glass: translucent input/toolbars/sidebar, nested layers, native tokens, code/status, submit/menu, mobile, SPA, presets, disable.`);
+    console.log(`PASS ${platform} frosted glass: dark input/toolbars/sidebar, white-photo contrast, nested layers, native tokens, code/status, submit/menu, mobile, SPA, presets, disable.`);
   }
   const missing=await context.newPage();await missing.goto('https://chatgpt.com/missing-wallpaper');
   await missing.evaluate(key=>{localStorage.setItem(key,JSON.stringify({palette:'custom'}));localStorage.removeItem('themeai.pixel.wallpaper.v1');},KEY);

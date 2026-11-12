@@ -8,6 +8,12 @@ Theme pixel cho **ChatGPT, Codex web và Claude**: trời đêm, trăng khuyết
 
 > Ảnh chụp trang minh họa đi kèm, không phải ảnh tài khoản ChatGPT/Claude thật. Theme trang trí giao diện gốc; không thay nội dung, bố cục điều hướng hay thương hiệu của các ứng dụng bằng giao diện demo.
 
+## Bản 1.1.2 — Kính mờ đậm, dễ đọc hơn
+
+- Tăng độ đục nền ô nhập, thanh công cụ, sidebar, menu và Pixel Studio lên tông xám xanh tối; giảm lớp phản sáng trắng.
+- Ảnh riêng có lớp phủ tối đồng đều để chữ hội thoại dễ đọc cả khi ảnh rất sáng. Vẫn giữ làm mờ nền, viền nhẹ và góc bo mềm.
+- Tải ZIP mới, thay thư mục `extension`, bấm **Reload** tiện ích và tải lại tab AI. Tampermonkey: cập nhật userscript lên **v1.1.2**.
+
 ## Bản 1.1.1 — Liquid glass cho ảnh riêng
 
 - Khi chọn **Upload image** hoặc **Use image**, ô nhập, thanh công cụ, sidebar và bảng Pixel Studio dùng kính mờ trong suốt: tông trung tính nhẹ, làm mờ nền, viền sáng và góc bo mềm.
@@ -21,7 +27,7 @@ Theme pixel cho **ChatGPT, Codex web và Claude**: trời đêm, trăng khuyết
 - Có **Upload image**: chọn ảnh từ máy tính, dùng **Fill screen** để phủ kín hoặc **Fit image** để thấy trọn ảnh. **Use image** chọn lại ảnh đã lưu; **Remove** xóa ảnh đó và trở về Night.
 - Ảnh riêng chỉ lưu trên trình duyệt; không gửi lên GitHub hay máy chủ. Trình duyệt thu gọn ảnh về tối đa 2048px cạnh dài để tiết kiệm kho lưu trữ. Hỗ trợ ảnh mà trình duyệt đọc được, gồm JPG, PNG, WebP, GIF, SVG và AVIF; GIF dùng khung hình tĩnh. File đầu vào tối đa 32 MB.
 
-**Cập nhật từ bản 1.0.0:** thay toàn bộ thư mục `extension` cũ bằng thư mục trong bộ cài mới, bấm **Reload** tại trang tiện ích, rồi tải lại ChatGPT/Claude. Với Tampermonkey, cài đè bản 1.1.1 để trình quản lý tải đủ các tài nguyên ảnh mới.
+**Cập nhật từ bản 1.0.0:** thay toàn bộ thư mục `extension` cũ bằng thư mục trong bộ cài mới, bấm **Reload** tại trang tiện ích, rồi tải lại ChatGPT/Claude. Với Tampermonkey, cài đè bản 1.1.2 để trình quản lý tải đủ các tài nguyên ảnh mới.
 
 ## Cài đặt
 
