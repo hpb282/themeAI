@@ -1,0 +1,23 @@
+:host { all: initial; }
+.sky { position: absolute; inset: 0; overflow: hidden; background: linear-gradient(180deg, var(--sky), transparent 80%); }
+.horizon { position: absolute; inset: 40% -10% -15%; background: radial-gradient(ellipse at 60% 100%, rgb(var(--rgb) / .10), transparent 65%); }
+.terrain { position: absolute; bottom: 0; left: 0; width: 100%; height: min(39vh, 360px); object-fit: cover; object-position: bottom;
+  image-rendering: pixelated; opacity: calc(.3 + var(--glow) * .7); }
+.moon { position: absolute; top: 9%; right: 5%; width: clamp(35px, 4.8vw, 72px); height: auto; image-rendering: pixelated;
+  opacity: .85; filter: drop-shadow(0 0 12px #ffe8a514); }
+.cloud { position: absolute; width: clamp(95px, 14vw, 210px); height: auto; image-rendering: pixelated; opacity: calc(var(--glow) * .55);
+  animation: cloud-drift 70s steps(100, end) infinite alternate; }
+.cloud-one { top: 10%; left: 15%; }
+.cloud-two { top: 22%; right: 15%; width: clamp(80px, 12vw, 170px); animation-delay: -34s; animation-direction: alternate-reverse; }
+.cloud-three { top: 48%; left: -3%; width: clamp(70px, 10vw, 150px); animation-delay: -16s; }
+.star { position: absolute; width: 2px; height: 2px; background: var(--accent); opacity: .5;
+  animation: twinkle var(--duration) steps(3, end) infinite alternate; animation-delay: var(--delay); }
+.star.cross { width: 3px; height: 3px; box-shadow: -3px 0 var(--accent), 3px 0 var(--accent), 0 -3px var(--accent), 0 3px var(--accent); }
+:host([data-stars="false"]) .star { display: none; }
+:host([data-clouds="false"]) .cloud { display: none; }
+:host([data-motion="false"]) *, :host([data-paused="true"]) * { animation-play-state: paused !important; }
+@keyframes cloud-drift { to { transform: translateX(90px); } }
+@keyframes twinkle { from { opacity: calc(var(--glow) * .25); } to { opacity: calc(var(--glow) * .9); } }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+@media (max-width: 600px) { .terrain { height: 24vh; opacity: .45; } .moon { top: 9%; right: 9%; width: 36px; } .cloud-three { display: none; } }
+@media print { :host { display: none !important; } }

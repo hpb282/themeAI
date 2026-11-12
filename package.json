@@ -1,0 +1,14 @@
+{
+  "name": "themeai-pixel-studio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A local pixel-art theme for ChatGPT, Codex and Claude.",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node --check src/theme.js && node --check extension/theme.js && node --check themeai.user.js",
+    "test": "node tests/theme.test.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  }
+}

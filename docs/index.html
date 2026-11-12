@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Xem thử theme pixel Night, Forest và Sakura cho ChatGPT, Codex và Claude.">
+  <title>ThemeAI · Pixel Studio · Bản xem thử</title>
+  <link rel="stylesheet" href="preview.css">
+</head>
+<body>
+  <div id="app">
+    <aside id="sidebar" data-testid="sidebar">
+      <a class="brand" href="https://github.com/hpb282/themeAI"><span class="brand-star">✦</span><span>PIXEL<br>STUDIO</span></a>
+      <button class="nav-item active" type="button">＋ <span>Tác vụ mới</span></button>
+      <button class="nav-item" type="button">▤ <span>Không gian</span></button>
+      <button class="nav-item" type="button">◷ <span>Gần đây</span></button>
+      <hr><p class="label">DỰ ÁN</p>
+      <button class="nav-item" type="button">⌑ <span>my-next-idea</span></button>
+      <button class="nav-item" type="button">⌑ <span>personal-site</span></button>
+      <div class="sidebar-bottom"><span class="avatar">P</span><span>pixel_dev<small>Không gian cá nhân</small></span></div>
+    </aside>
+    <div class="workspace">
+      <header><div><span class="header-icon">⌘</span><span id="platform-label">ChatGPT / Codex</span><span class="slash"> / </span><span class="muted">workspace</span></div><span class="badge">BẢN XEM THỬ</span></header>
+      <main id="workspace-main">
+        <div class="welcome">
+          <svg class="hero-star" viewBox="0 0 24 24" aria-hidden="true" shape-rendering="crispEdges"><path d="M10 1H14V5H16V8H22V12H20V14H18V20H14V18H10V20H6V14H4V12H2V8H8V5H10Z" fill="currentColor"/><rect x="9" y="9" width="2" height="4" fill="#14223d"/><rect x="14" y="9" width="2" height="4" fill="#14223d"/></svg>
+          <p class="eyebrow">MỘT THẾ GIỚI NHỎ. MỘT Ý TƯỞNG LỚN.</p>
+          <h1>Hôm nay, mình cùng tạo điều gì?</h1>
+          <p class="intro">Thêm một chút phép màu pixel cho ý tưởng tiếp theo.</p>
+          <form id="preview-composer" data-testid="chat-input-container">
+            <label for="prompt-textarea" class="sr-only">Ô nhập minh họa</label>
+            <textarea id="prompt-textarea" placeholder="Viết ý tưởng tiếp theo của bạn…" rows="2"></textarea>
+            <div class="composer-tools"><span>＋ &nbsp; ↥ <small>Minh họa · Không kết nối AI</small></span><button type="submit" aria-label="Gửi minh họa">➤</button></div>
+          </form>
+          <div class="suggestions"><button type="button" data-prompt="Tạo một website portfolio">⌁ Thiết kế website</button><button type="button" data-prompt="Khám phá một ý tưởng sáng tạo">✧ Khám phá ý tưởng</button></div>
+          <p id="demo-notice" role="status"></p>
+        </div>
+        <section class="conversation" aria-label="Hội thoại minh họa">
+          <div class="message"><span class="avatar small">P</span><div><strong>Bạn</strong><p>Viết cho mình một lời chào bằng Python nhé.</p></div></div>
+          <div class="message"><span class="ai-star">✦</span><div class="response"><strong id="assistant-label">Codex</strong><p>Một khởi đầu nhỏ cho điều gì đó thật thú vị.</p><div class="code"><div class="code-header"><span>hello.py</span><span>PYTHON</span></div><pre><code><span class="syntax-muted"># A little pixel magic ✦</span>
+<span class="syntax-pink">def</span> <span class="syntax-cyan">hello</span>(name):
+    <span class="syntax-pink">return</span> <span class="syntax-warm">f"Hello, {name}!"</span>
+
+<span class="syntax-cyan">print</span>(hello(<span class="syntax-warm">"Pixel Studio"</span>))</code></pre></div></div></div>
+        </section>
+        <div class="preview-controls"><span>THỬ TRÊN</span><button type="button" data-platform="chatgpt" aria-pressed="true">ChatGPT / Codex</button><button type="button" data-platform="claude" aria-pressed="false">Claude</button><a href="https://github.com/hpb282/themeAI#cài-đặt">Cài theme ↗</a></div>
+      </main>
+      <footer>THEMEAI / PIXEL STUDIO <span>Giao diện minh họa, không phải trang ChatGPT hay Claude thật.</span></footer>
+    </div>
+  </div>
+  <script src="../extension/theme.js"></script><script src="preview.js"></script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+/* Host-page styling is scoped to one removable attribute. Never replace the app DOM. */
+html[data-themeai] {
+  color-scheme: dark;
+  background: var(--ta-sky) !important;
+  --main-surface-primary: var(--ta-main) !important;
+  --main-surface-primary-inverse: #f0f2fc !important;
+  --main-surface-secondary: var(--ta-surface) !important;
+  --main-surface-tertiary: var(--ta-raised) !important;
+  --sidebar-surface-primary: var(--ta-sidebar) !important;
+  --sidebar-surface-secondary: var(--ta-surface) !important;
+  --sidebar-surface-tertiary: var(--ta-raised) !important;
+  --message-surface: var(--ta-message) !important;
+  --bg-primary: var(--ta-main) !important;
+  --bg-secondary: var(--ta-surface) !important;
+  --bg-tertiary: var(--ta-raised) !important;
+  --bg-elevated-primary: var(--ta-solid) !important;
+  --bg-elevated-secondary: var(--ta-raised) !important;
+  --text-primary: #eef1fc !important;
+  --text-secondary: #c2cadf !important;
+  --text-tertiary: #a3afcd !important;
+  --text-quaternary: #8c9aba !important;
+  --text-accent: var(--ta-accent) !important;
+  --border-light: #d9e3ff18 !important;
+  --border-medium: #d9e3ff30 !important;
+  --border-heavy: #d9e3ff44 !important;
+  --theme-bg-primary: var(--ta-main) !important;
+  --theme-bg-secondary: var(--ta-surface) !important;
+  --theme-bg-tertiary: var(--ta-raised) !important;
+  --theme-bg-elevated: var(--ta-solid) !important;
+  --theme-fg-primary: #eef1fc !important;
+  --theme-fg-secondary: #c2cadf !important;
+  --theme-text-primary: #eef1fc !important;
+  --theme-text-secondary: #c2cadf !important;
+  --theme-border: #d9e3ff28 !important;
+}
+html[data-themeai] body {
+  background: transparent !important;
+  color: #eef1fc;
+  isolation: isolate;
+}
+html[data-themeai] :is(#root, #app, #__next, main, [role="main"]) {
+  background-color: transparent !important;
+}
+html[data-themeai] [data-themeai-sidebar] {
+  background: var(--ta-sidebar) !important;
+  border-inline-end-color: rgb(var(--ta-rgb) / .18) !important;
+}
+/* The lightweight/mobile ChatGPT shell has some hard-coded neutral colors. */
+html[data-themeai] #web-mobile-root [data-themeai-neutral-text="primary"] { color: #eef1fc !important; }
+html[data-themeai] #web-mobile-root [data-themeai-neutral-text="muted"] { color: #a3afcd !important; }
+html[data-themeai] #web-mobile-root [data-themeai-neutral-bg="surface"] { background-color: var(--ta-solid) !important; }
+html[data-themeai] #web-mobile-root [data-themeai-neutral-bg="canvas"] { background-color: transparent !important; }
+html[data-themeai] #web-mobile-root [data-themeai-neutral-gradient] { background-image: none !important; }
+html[data-themeai] #web-mobile-root [data-themeai-neutral-before]::before,
+html[data-themeai] #web-mobile-root [data-themeai-neutral-after]::after { background: var(--ta-sidebar) !important; }
+html[data-themeai] [data-themeai-composer] {
+  background-color: var(--ta-solid) !important;
+  border-radius: 7px !important;
+  box-shadow: 0 0 0 1px rgb(var(--ta-rgb) / .7),
+    3px 0 0 -1px rgb(var(--ta-rgb) / .45), -3px 0 0 -1px rgb(var(--ta-rgb) / .45),
+    0 3px 0 -1px rgb(var(--ta-rgb) / .45), 0 -3px 0 -1px rgb(var(--ta-rgb) / .45),
+    0 0 25px rgb(var(--ta-rgb) / calc(var(--ta-glow) * .15)) !important;
+}
+html[data-themeai] :is(#prompt-textarea, textarea, [contenteditable="true"], [contenteditable="plaintext-only"]) {
+  caret-color: var(--ta-accent);
+}
+html[data-themeai] :is(button, a, input, textarea, [contenteditable="true"]):focus-visible {
+  outline: 2px solid var(--ta-accent) !important;
+  outline-offset: 3px;
+}
+html[data-themeai] ::selection { background: rgb(var(--ta-rgb) / .28); color: #fff; }
+/* Current ChatGPT also exposes semantic --color-* tokens. Keep status/syntax colors intact. */
+html[data-themeai][data-themeai-platform="chatgpt"],
+html[data-themeai][data-themeai-platform="chatgpt"] body {
+  --color-surface: var(--ta-main) !important;
+  --color-surface-canvas: var(--ta-main) !important;
+  --color-surface-card: var(--ta-solid) !important;
+  --color-surface-secondary: var(--ta-surface) !important;
+  --color-surface-tertiary: var(--ta-raised) !important;
+  --color-surface-elevated: var(--ta-solid) !important;
+  --color-surface-elevated-secondary: var(--ta-raised) !important;
+  --color-background-primary: var(--ta-main) !important;
+  --color-background-secondary: var(--ta-surface) !important;
+  --color-background-tertiary: var(--ta-raised) !important;
+  --color-background-panel: var(--ta-solid) !important;
+  --color-background-composer-primary: var(--ta-solid) !important;
+  --color-background-composer-surface: var(--ta-solid) !important;
+  --color-background-composer-action-bar: var(--ta-solid) !important;
+  --color-background-user-message: var(--ta-message) !important;
+  --color-text: #eef1fc !important;
+  --color-text-primary: #eef1fc !important;
+  --color-text-prose: #eef1fc !important;
+  --color-text-secondary: #c2cadf !important;
+  --color-text-tertiary: #a3afcd !important;
+  --color-text-composer-primary: #eef1fc !important;
+  --color-text-user-message: #eef1fc !important;
+  --color-border: #d9e3ff28 !important;
+  --color-border-light: #d9e3ff18 !important;
+  --color-border-heavy: #d9e3ff44 !important;
+}
+/* Claude uses HSL component tokens, unlike ChatGPT's complete color values. */
+html[data-themeai][data-themeai-platform="claude"],
+html[data-themeai][data-themeai-platform="claude"] body {
+  --bg-000: var(--ta-hsl) !important;
+  --bg-100: var(--ta-hsl) !important;
+  --bg-200: var(--ta-hsl-raised) !important;
+  --bg-300: var(--ta-hsl-raised) !important;
+  --bg-400: var(--ta-hsl-raised) !important;
+  --bg-500: var(--ta-hsl-raised) !important;
+  --text-000: 226 70% 96% !important;
+  --text-100: 226 50% 93% !important;
+  --text-200: 225 30% 83% !important;
+  --text-300: 225 24% 74% !important;
+  --text-400: 225 20% 65% !important;
+  --text-500: 225 20% 60% !important;
+  --border-100: 225 30% 72% !important;
+  --border-200: 225 30% 68% !important;
+  --border-300: 225 30% 64% !important;
+  --oncolor-100: 225 40% 10% !important;
+}
+html[data-themeai][data-themeai-platform="claude"] :is(.bg-bg-100, .bg-bg-000, [data-testid="root"]) {
+  background-color: transparent !important;
+}
+html[data-themeai][data-themeai-platform="claude"] [data-themeai-composer] {
+  background-color: var(--ta-solid) !important;
+}
+/* Claude's newer CDS/dframe shell, verified against its public stylesheets. */
+html[data-themeai][data-themeai-platform="claude"],
+html[data-themeai][data-themeai-platform="claude"] :is(body, [data-cds-theme]) {
+  --cds-surface-0: var(--ta-main) !important;
+  --cds-surface-1: var(--ta-main) !important;
+  --cds-surface-2: var(--ta-surface) !important;
+  --cds-surface-3: var(--ta-solid) !important;
+  --cds-surface-panel: var(--ta-solid) !important;
+  --cds-surface-popover: var(--ta-solid) !important;
+  --cds-text-primary: #eef1fc !important;
+  --cds-text-secondary: #c2cadf !important;
+  --cds-text-stays-secondary: #c2cadf !important;
+  --cds-text-muted: #a3afcd !important;
+  --cds-text-disabled: #8290ad !important;
+  --cds-text-accent: var(--ta-accent) !important;
+  --cds-chat-composer-link: var(--ta-accent) !important;
+  --cds-chat-composer-link-hover: var(--ta-secondary) !important;
+  --cds-border: #d9e3ff20 !important;
+  --cds-border-line: #d9e3ff30 !important;
+  --cds-border-line-muted: #d9e3ff18 !important;
+  --cds-border-strong: #d9e3ff38 !important;
+  --cds-border-stronger: #d9e3ff50 !important;
+  --df-bg-page: var(--ta-main) !important;
+  --df-bg-page-hsl: var(--ta-hsl) !important;
+  --df-page-ground: var(--ta-main) !important;
+  --df-sidebar-bg: var(--ta-sidebar) !important;
+  --df-web-sidebar-bg: var(--ta-sidebar) !important;
+  --df-sidebar-tint: var(--ta-sidebar) !important;
+  --df-z0: var(--ta-hsl) !important;
+  --df-z1: var(--ta-hsl) !important;
+  --df-z2: var(--ta-hsl-raised) !important;
+  --df-z3: var(--ta-hsl-raised) !important;
+}
+@media print {
+  #themeai-scene, #themeai-ui { display: none !important; }
+}

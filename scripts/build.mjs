@@ -1,0 +1,21 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {makeAssets,palettes} from '../src/landscapes.mjs';
+
+const root=path.dirname(path.dirname(fileURLToPath(import.meta.url)));
+const read=p=>fs.readFileSync(path.join(root,p),'utf8');
+const write=(p,s)=>{fs.mkdirSync(path.dirname(path.join(root,p)),{recursive:true});fs.writeFileSync(path.join(root,p),s);};
+const assets=makeAssets();
+const replacements={__PALETTES__:palettes,__ASSETS__:assets,__PAGE_CSS__:read('src/page.css'),__PANEL_CSS__:read('src/panel.css'),__SCENE_CSS__:read('src/scene.css')};
+let runtime=read('src/theme.js');
+for(const [token,value] of Object.entries(replacements)) runtime=runtime.replace(token,()=>JSON.stringify(value));
+if(/__(?:PALETTES|ASSETS|PAGE_CSS|PANEL_CSS|SCENE_CSS)__/.test(runtime))throw new Error('Unresolved build token');
+write('extension/theme.js',runtime);
+const matches=['https://chatgpt.com/*','https://chat.openai.com/*','https://codex.chatgpt.com/*','https://codex.com/*','https://claude.ai/*'];
+const manifest={manifest_version:3,name:'ThemeAI — Pixel Studio',version:'1.0.0',description:'Pixel Night, Forest và Sakura cho ChatGPT, Codex và Claude. Cảnh động, sao, mây và tia sáng theo chuột.',permissions:['storage'],content_scripts:[{matches,js:['theme.js'],run_at:'document_idle',all_frames:false}],icons:{'16':'icons/icon-16.png','48':'icons/icon-48.png','128':'icons/icon-128.png'}};
+write('extension/manifest.json',JSON.stringify(manifest,null,2)+'\n');
+const metadata=['// ==UserScript==','// @name         ThemeAI — Pixel Studio','// @namespace    https://github.com/hpb282/themeAI','// @version      1.0.0','// @description  Theme pixel Night / Forest / Sakura cho ChatGPT, Codex và Claude.',...matches.map(m=>'// @match        '+m),'// @run-at       document-idle','// @grant        GM_getValue','// @grant        GM_setValue','// @grant        GM_addValueChangeListener','// @noframes','// ==/UserScript==',''];
+write('themeai.user.js',metadata.join('\n')+'\n'+runtime);
+for(const [key,art] of Object.entries(assets))write('docs/assets/'+key+'.svg',art.landscape);
+console.log('Built extension/theme.js, extension/manifest.json, themeai.user.js and original pixel art.');
