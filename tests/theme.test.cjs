@@ -13,6 +13,15 @@ function fixture(platform) {
   const prompt=platform==='claude'?'<div class="bg-bg-000" data-testid="chat-input-container"><div class="ProseMirror" role="textbox" aria-label="Message" data-testid="chat-input" contenteditable="true"></div><button type="submit" id="send">Send</button></div>':'<textarea id="prompt-textarea" aria-label="Message"></textarea><button type="submit" id="send">Send</button>';
   return `<!doctype html><html><head><style>body{margin:0;background:rgb(27,27,27);color:white}#app{min-height:100vh;display:flex;background:#171717}#sidebar{width:190px;min-height:100vh;background:#222}main{padding:45px;flex:1;background:#191919}form{padding:20px;border-radius:20px;background:#333;margin:20px 0}[contenteditable],textarea{min-height:60px;width:100%;color:inherit;background:transparent}pre{background:rgb(12,12,12);color:rgb(220,220,220)}#menu[hidden]{display:none}</style></head><body><div id="app" class="bg-bg-100"><aside id="sidebar" data-testid="sidebar">${platform} navigation</aside><main><h1>${platform}</h1><form id="original-form">${prompt}</form><button id="original-button">Native menu</button><div id="menu" role="dialog" hidden>Native menu content</div><pre id="code"><code><span style="color:rgb(255,120,180)">const</span> answer = 42;</code></pre></main></div><script>window.submitCount=0;document.getElementById('original-form').addEventListener('submit',e=>{e.preventDefault();window.submitCount++});document.getElementById('original-button').addEventListener('click',()=>{document.getElementById('menu').hidden=false});</script></body></html>`;
 }
+function glassFixture(platform) {
+  const tools='<div role="toolbar" class="actions"><button type="button" id="access">Full access</button><button id="glass-send" type="submit">Send</button></div>';
+  const input=platform==='claude'?'<div class="native-layer"><div class="ProseMirror" role="textbox" aria-label="Message" contenteditable="true"></div></div>':`<div class="native-layer"><textarea ${platform==='chatgpt'?'id="prompt-textarea"':''} aria-label="Message" placeholder="Do anything"></textarea></div>`;
+  const composer=platform==='codex'?`<div id="glass-composer">${input}${tools}</div>`:`<form id="glass-composer"><div data-testid="${platform==='claude'?'chat-input-container':'composer'}" class="native-layer">${input}${tools}</div></form>`;
+  return `<!doctype html><html><head><meta charset="utf-8"><style>
+    *{box-sizing:border-box}body{margin:0;background:#171717;color:#eef1fc;font:16px system-ui}#app{display:flex;min-height:100vh;background:var(--bg-primary,#171717)}#sidebar{width:230px;flex-shrink:0;padding:28px;background:#222}main{flex:1;padding:32px;min-width:0}header{padding:16px;background:var(--bg-elevated-primary,#252525)}h1{margin:100px 0 28px;text-align:center;font-size:30px}.compose-group{max-width:760px;margin:0 auto}#environment-toolbar{padding:16px;margin-bottom:8px;background:var(--bg-elevated-primary,#252525)}#glass-composer{padding:20px;background:#252525}.native-layer{background:#24235a;border-radius:18px}.actions{display:flex;justify-content:space-between;padding:14px 0 0;background:var(--color-background-composer-action-bar,#24235a)}button{font:inherit;color:inherit;background:transparent;border:0;cursor:pointer}textarea,[contenteditable]{width:100%;min-height:84px;resize:none;border:0;padding:10px;background:#24235a;color:inherit;font:inherit}.token-surface{background:var(--color-background-panel,var(--cds-surface-3,#24235a));padding:8px}.hsl-surface{background:hsl(var(--bg-200,0 0% 20%));padding:8px}#glass-menu{background:var(--bg-elevated-primary,#252525);padding:16px}.monaco-editor{margin-top:24px;background:#090909}.monaco-editor header{background:#090909}.monaco-editor textarea{background:#090909}.danger{color:rgb(210,0,0)}[hidden]{display:none!important}@media(max-width:600px){#sidebar{width:65px;padding:18px 8px;font-size:11px}main{padding:12px}h1{font-size:24px;margin-top:50px}#glass-composer{padding:12px}.token-surface,.hsl-surface{font-size:12px}}
+  </style></head><body><div id="app"><aside id="sidebar">Codex<br>New chat<br>Tasks<br>Library</aside><main><header id="glass-header">Workspace</header><h1>What should we build?</h1><div class="compose-group"><div id="environment-toolbar" role="toolbar"><button type="button" id="environment">Cloud · Default environment</button></div>${composer}<div class="token-surface">Native panel token</div><div class="hsl-surface">Native HSL token</div><div role="menu" id="glass-menu" hidden>Native environment menu</div><p class="danger">Status remains red</p><div class="monaco-editor"><header id="code-header">Editor</header><textarea aria-label="Code editor">const answer = 42;</textarea></div></div></main></div><script>window.submitCount=0;document.getElementById('glass-composer').addEventListener('submit',e=>{e.preventDefault();window.submitCount++});${platform==='codex'?"document.getElementById('glass-send').addEventListener('click',()=>window.submitCount++);":''}document.getElementById('environment').addEventListener('click',()=>document.getElementById('glass-menu').hidden=false);</script></body></html>`;
+}
+const alpha=color=>{const parts=color.match(/[\d.]+/g).map(Number);return parts.length===4?parts[3]:1;};
 (async()=>{
   const executable=process.env.CHROMIUM_PATH||(['/usr/bin/chromium','/usr/bin/chromium-browser'].find(p=>fs.existsSync(p)));
   const browser=await chromium.launch({headless:true,...(executable?{executablePath:executable}:{}),args:['--no-sandbox']});
@@ -127,12 +136,14 @@ function fixture(platform) {
   await photo.addScriptTag({path:runtime});await photo.getByRole('button',{name:'Mở cài đặt Pixel Studio',exact:true}).click();
   await photo.locator('#themeai-ui').locator('input[type=file]').setInputFiles({name:'my-wallpaper.png',mimeType:'image/png',buffer:fs.readFileSync(path.join(root,'extension/icons/icon-128.png'))});
   await photo.waitForFunction(()=>document.documentElement.dataset.themeai==='custom');
+  assert.match(await photo.locator('[data-themeai-composer]').evaluate(e=>getComputedStyle(e).backdropFilter),/blur\(/);
   await photo.waitForFunction(()=>JSON.parse(localStorage.getItem('themeai.pixel.wallpaper.v1'))?.name==='my-wallpaper.png');
   await photo.getByRole('button',{name:'Fit image',exact:true}).click();
   assert.equal(await photo.locator('#themeai-scene').evaluate(e=>getComputedStyle(e.shadowRoot.querySelector('.terrain')).objectFit),'contain');
   await photo.waitForFunction(key=>JSON.parse(localStorage.getItem(key))?.customFit==='contain',KEY);
   await photo.reload();await photo.addScriptTag({path:runtime});
   await photo.waitForFunction(()=>document.documentElement.dataset.themeai==='custom');
+  assert(alpha(await photo.locator('[data-themeai-composer]').evaluate(e=>getComputedStyle(e).backgroundColor))<.6);
   const savedSource=await photo.locator('#themeai-scene').locator('.terrain').getAttribute('src');
   assert(savedSource.startsWith('data:image/'));
   await photo.getByRole('button',{name:'Mở cài đặt Pixel Studio',exact:true}).click();
@@ -147,6 +158,69 @@ function fixture(platform) {
   assert.equal(await photo.locator('html').getAttribute('data-themeai'),'night');
   assert.equal(await photo.evaluate(()=>JSON.parse(localStorage.getItem('themeai.pixel.wallpaper.v1'))),null);
   console.log('PASS custom wallpaper: desktop file input, local persistence/reload, fit modes, invalid file preserves previous image, reselect, removal.');
+  const wallpaper={data:'data:image/webp;base64,'+fs.readFileSync(path.join(root,'extension/assets/forest.webp')).toString('base64'),name:'glass-test.webp',id:'glass-test'};
+  for(const [platform,url] of [['chatgpt','https://chatgpt.com/liquid-glass'],['codex','https://codex.chatgpt.com/liquid-glass'],['claude','https://claude.ai/liquid-glass']]) {
+    const page=await context.newPage();page.on('pageerror',e=>errors.push(String(e)));
+    await page.route(url,r=>r.fulfill({status:200,contentType:'text/html',body:glassFixture(platform)}));
+    await page.goto(url);
+    const native=await page.locator('#glass-composer').evaluate(e=>getComputedStyle(e).backgroundColor);
+    await page.getByRole('textbox',{name:'Message',exact:true}).fill('Keep this message while changing the theme.');
+    await page.evaluate(({key,wallpaper})=>{localStorage.setItem(key,JSON.stringify({palette:'custom',motion:false}));localStorage.setItem('themeai.pixel.wallpaper.v1',JSON.stringify(wallpaper));},{key:KEY,wallpaper});
+    await page.addScriptTag({path:platform==='claude'?userScript:runtime});
+    await page.waitForFunction(()=>document.documentElement.dataset.themeai==='custom');
+    assert.equal(await page.locator('[data-themeai-composer]').count(),1);
+    for(const selector of ['#glass-composer','#environment-toolbar','#glass-header','#sidebar','.token-surface',...(platform==='claude'?['.hsl-surface']:[])]) {
+      const color=await page.locator(selector).evaluate(e=>getComputedStyle(e).backgroundColor);
+      assert(alpha(color)>0&&alpha(color)<.6,`${platform} ${selector} should be translucent: ${color}`);
+    }
+    for(const selector of ['#glass-composer','#environment-toolbar','#sidebar'])assert.match(await page.locator(selector).evaluate(e=>getComputedStyle(e).backdropFilter),/blur\(/);
+    assert.equal(await page.locator('#glass-composer').evaluate(e=>getComputedStyle(e).borderRadius),'24px');
+    for(const layer of await page.locator('[data-themeai-composer-layer]').all())assert.equal(alpha(await layer.evaluate(e=>getComputedStyle(e).backgroundColor)),0);
+    assert.equal(await page.locator('#glass-composer [role="toolbar"]').evaluate(e=>getComputedStyle(e).backdropFilter),'none');
+    assert.equal(await page.getByRole('textbox',{name:'Code editor',exact:true}).getAttribute('data-themeai-composer-layer'),null);
+    assert.equal(await page.locator('#code-header').getAttribute('data-themeai-toolbar'),null);
+    assert.equal(await page.getByRole('textbox',{name:'Code editor',exact:true}).evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(9, 9, 9)');
+    assert.equal(await page.locator('.danger').evaluate(e=>getComputedStyle(e).color),'rgb(210, 0, 0)');
+    await page.locator('#glass-send').click();assert.equal(await page.evaluate(()=>window.submitCount),1);
+    assert.equal(await page.getByRole('textbox',{name:'Message',exact:true}).evaluate(e=>e.value??e.textContent),'Keep this message while changing the theme.');
+    await page.locator('#environment').click();assert(await page.locator('#glass-menu').isVisible());
+    assert.match(await page.locator('#glass-menu').evaluate(e=>getComputedStyle(e).backdropFilter),/blur\(/);
+    await page.locator('#glass-menu').evaluate(e=>e.hidden=true);
+    await page.screenshot({path:path.join(resultDir,`liquid-glass-${platform}.png`)});
+    await page.setViewportSize({width:390,height:844});
+    const bounds=await page.locator('#glass-composer').boundingBox();assert(bounds.x>=0&&bounds.x+bounds.width<=390);
+    await page.screenshot({path:path.join(resultDir,`liquid-glass-${platform}-mobile.png`)});
+    await page.evaluate(()=>{
+      const container=document.createElement('section'),layer=document.createElement('div'),input=document.createElement('textarea'),button=document.createElement('button');
+      container.id='spa-composer';layer.append(input);button.textContent='Send';container.append(layer,button);document.querySelector('main').append(container);
+    });
+    await page.waitForFunction(()=>document.getElementById('spa-composer').hasAttribute('data-themeai-composer'));
+    assert.match(await page.locator('#spa-composer').evaluate(e=>getComputedStyle(e).backdropFilter),/blur\(/);
+    const dock=page.getByRole('button',{name:'Mở cài đặt Pixel Studio',exact:true});await dock.click();
+    assert.match(await page.locator('#themeai-ui').locator('.dock').evaluate(e=>getComputedStyle(e).backdropFilter),/blur\(/);
+    await page.getByRole('button',{name:'Forest',exact:true}).click();
+    assert.equal(alpha(await page.locator('#glass-composer').evaluate(e=>getComputedStyle(e).backgroundColor)),1);
+    assert.equal(await page.locator('#glass-composer').evaluate(e=>getComputedStyle(e).backdropFilter),'none');
+    await page.getByRole('button',{name:'Use image',exact:true}).click();
+    assert.match(await page.locator('#glass-composer').evaluate(e=>getComputedStyle(e).backdropFilter),/blur\(/);
+    await page.getByText('More settings',{exact:true}).click();await page.getByRole('switch',{name:'Bật theme pixel',exact:true}).uncheck();
+    assert.equal(await page.locator('#glass-composer').evaluate(e=>getComputedStyle(e).backgroundColor),native);
+    assert.equal(await page.locator('#glass-composer').evaluate(e=>getComputedStyle(e).backdropFilter),'none');
+    assert.equal(await page.locator('#themeai-ui').getAttribute('data-palette'),'');
+    await page.close();
+    console.log(`PASS ${platform} liquid glass: translucent input/toolbars/sidebar, nested layers, native tokens, code/status, submit/menu, mobile, SPA, presets, disable.`);
+  }
+  const missing=await context.newPage();await missing.goto('https://chatgpt.com/missing-wallpaper');
+  await missing.evaluate(key=>{localStorage.setItem(key,JSON.stringify({palette:'custom'}));localStorage.removeItem('themeai.pixel.wallpaper.v1');},KEY);
+  await missing.addScriptTag({path:runtime});await missing.waitForFunction(()=>document.documentElement.dataset.themeai==='night');
+  assert.equal(await missing.locator('#themeai-scene').getAttribute('data-palette'),'night');
+  console.log('PASS missing wallpaper: falls back to Night without enabling glass.');
+  await mobile.evaluate(({key,wallpaper})=>{localStorage.setItem(key,JSON.stringify({palette:'custom'}));localStorage.setItem('themeai.pixel.wallpaper.v1',JSON.stringify(wallpaper));},{key:KEY,wallpaper});
+  await mobile.reload();await mobile.addScriptTag({path:runtime});
+  await mobile.waitForFunction(()=>document.documentElement.dataset.themeai==='custom');
+  assert.equal(alpha(await mobile.locator('#mobile-composer-prompt').evaluate(e=>getComputedStyle(e).backgroundColor)),0);
+  assert.match(await mobile.locator('[data-themeai-composer]').evaluate(e=>getComputedStyle(e).backdropFilter),/blur\(/);
+  console.log('PASS lightweight ChatGPT glass: marked neutral input layers stay transparent.');
   assert.deepEqual(errors,[]);assert.equal(externalRequests,0);
   await browser.close();console.log('PASS no unexpected page errors or network requests. Tests use DOM fixtures, not signed-in production apps.');
 })().catch(error=>{console.error(error);process.exit(1);});

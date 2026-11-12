@@ -4,7 +4,7 @@
   if (window.top !== window.self) return;
   const KEY = 'themeai.pixel.v1';
   const IMAGE_KEY = 'themeai.pixel.wallpaper.v1';
-  const VERSION = '1.1.0';
+  const VERSION = '1.1.1';
   const SCRIPT_URL = document.currentScript?.src;
   const PALETTES = __PALETTES__;
   const ASSETS = __ASSETS__;
@@ -202,15 +202,22 @@
     function apply() {
       const active=settings.palette==='custom'?(customImage?'custom':'night'):settings.palette;
       const p=PALETTES[active]||PALETTES.night;
-      if(settings.enabled) root.dataset.themeai=settings.palette; else root.removeAttribute('data-themeai');
+      if(settings.enabled) root.dataset.themeai=active; else root.removeAttribute('data-themeai');
       scene.hidden=!settings.enabled; scene.style.display=settings.enabled?'block':'none';
-      // Use opaque readable surfaces for composers/menus, translucent main and side panels.
+      // Pixel presets keep their original colors; personal photos use neutral glass.
       const values={accent:p.accent,secondary:p.secondary,rgb:p.rgb,sky:p.sky,solid:p.surface,
         main:p.sky+'88',surface:p.surface+'eb',raised:p.surface,message:p.surface+'ee',sidebar:p.sky+'b8',
-        hsl:p.hsl,'hsl-raised':p.hsl.replace(/\d+%$/, '17%'),glow:settings.glow/100};
+        hsl:p.hsl,'hsl-raised':p.hsl.replace(/\d+%$/, '17%'),glow:settings.glow/100,
+        ...(active==='custom'?{
+          sky:'#10131d',main:'transparent',solid:'rgb(22 26 38 / .28)',
+          surface:'rgb(22 26 38 / .18)',raised:'rgb(255 255 255 / .12)',
+          message:'rgb(22 26 38 / .34)',sidebar:'rgb(22 26 38 / .22)',
+          hsl:'228 27% 8% / .22','hsl-raised':'228 20% 16% / .30'
+        }:{})};
       for(const [key,value] of Object.entries(values)) root.style.setProperty('--ta-'+key,String(value));
-      for(const [key,value] of Object.entries({accent:p.accent,rgb:p.rgb,sky:p.sky,glow:settings.glow/100})) scene.style.setProperty('--'+key,String(value));
+      for(const [key,value] of Object.entries({accent:p.accent,rgb:p.rgb,sky:values.sky,glow:settings.glow/100})) scene.style.setProperty('--'+key,String(value));
       host.style.setProperty('--accent',p.accent); host.style.setProperty('--secondary',p.secondary);
+      host.dataset.palette=settings.enabled?active:'';
       const source=active==='custom'?customImage.data:resource(active);
       if(activeScene!==source) {
         terrain.src=source;activeScene=source;
@@ -314,9 +321,24 @@
     });
     imageStore.listen(value=>{customImage=validImage(value);apply();});
     // Add only styling markers. Input values, messages, code and app handlers stay intact.
-    const promptSelector='#prompt-textarea, #mobile-composer-prompt, [data-testid="chat-input"][contenteditable="true"], textarea[data-testid="chat-input"], [data-chat-input-container] textarea, .ProseMirror[contenteditable="true"], [contenteditable="true"][role="textbox"], [contenteditable="plaintext-only"][role="textbox"]';
+    const promptSelector='textarea, #prompt-textarea, #mobile-composer-prompt, [data-testid="chat-input"][contenteditable="true"], .ProseMirror[contenteditable="true"], [contenteditable="true"][role="textbox"], [contenteditable="plaintext-only"][role="textbox"]';
+    const composerSelector='[data-testid="composer"], [data-testid="chat-input-container"], [data-testid="chat-input-grid-container"], [data-chat-input-container]';
     const sidebarSelector='#sidebar, #ds-sidebar, #stage-slideover-sidebar, [data-testid="sidebar"], [data-testid="claude-sidebar"], [data-testid="sidebar-content"], nav[aria-label="Sidebar"], .dframe-sidebar';
+    const toolbarSelector='header, [role="toolbar"], [data-testid="page-header"], [data-testid="composer-toolbar"], [data-testid="composer-action-bar"]';
     const preserve='pre, code, kbd, .monaco-editor, .cm-editor, [data-themeai-preserve]';
+    function findComposer(prompt) {
+      const container=prompt.closest('form')||prompt.closest(composerSelector)
+        ||(platform==='claude'?prompt.closest('.bg-bg-000'):null);
+      if(container)return container;
+      // Codex also has textareas without a ChatGPT id or a surrounding form.
+      const canvas='body, main, [role="main"], #root, #app, #__next';
+      let parent=prompt.parentElement;
+      for(let depth=0;parent&&depth<4;depth++,parent=parent.parentElement) {
+        if(parent.matches(canvas)||parent.matches(sidebarSelector))break;
+        if(parent.querySelector('button'))return parent;
+      }
+      return prompt.parentElement&&!prompt.parentElement.matches(canvas)?prompt.parentElement:prompt;
+    }
     function neutral(color,includeTransparent=false) {
       const parts=color.match(/[\d.]+/g)?.map(Number);
       if(!parts||parts.length<3||(!includeTransparent&&parts.length===4&&parts[3]<.85))return null;
@@ -357,12 +379,16 @@
       if(!(node instanceof Element)||node===host||node===scene||node.closest('#themeai-ui, #themeai-scene'))return;
       const prompts=[...(node.matches(promptSelector)?[node]:[]),...node.querySelectorAll(promptSelector)];
       for(const prompt of prompts) {
-        const composer=prompt.closest('form, [data-testid="composer"], [data-testid="chat-input-container"], [data-testid="chat-input-grid-container"], [data-chat-input-container]')
-          ||(platform==='claude'?prompt.closest('.bg-bg-000'):null);
-        if(composer)composer.setAttribute('data-themeai-composer','');
+        if(prompt.closest(preserve))continue;
+        const composer=findComposer(prompt);
+        composer.setAttribute('data-themeai-composer','');
+        // A single glass pane: nested native input shells must not stack dark fills.
+        for(let layer=prompt;layer&&layer!==composer;layer=layer.parentElement)layer.setAttribute('data-themeai-composer-layer','');
       }
       const sidebars=[...(node.matches(sidebarSelector)?[node]:[]),...node.querySelectorAll(sidebarSelector)];
       for(const sidebar of sidebars)sidebar.setAttribute('data-themeai-sidebar','');
+      const toolbars=[...(node.matches(toolbarSelector)?[node]:[]),...node.querySelectorAll(toolbarSelector)];
+      for(const toolbar of toolbars)if(!toolbar.closest(preserve))toolbar.setAttribute('data-themeai-toolbar','');
       if(platform==='chatgpt')markLightweightShell(node);
     }
     mark(document.body);

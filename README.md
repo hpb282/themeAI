@@ -8,6 +8,12 @@ Theme pixel cho **ChatGPT, Codex web và Claude**: trời đêm, trăng khuyết
 
 > Ảnh chụp trang minh họa đi kèm, không phải ảnh tài khoản ChatGPT/Claude thật. Theme trang trí giao diện gốc; không thay nội dung, bố cục điều hướng hay thương hiệu của các ứng dụng bằng giao diện demo.
 
+## Bản 1.1.1 — Liquid glass cho ảnh riêng
+
+- Khi chọn **Upload image** hoặc **Use image**, ô nhập, thanh công cụ, sidebar và bảng Pixel Studio dùng kính mờ trong suốt: tông trung tính nhẹ, làm mờ nền, viền sáng và góc bo mềm.
+- Bỏ các lớp nền tím đặc chồng trong ô nhập; nhận diện thêm ô nhập Codex không có ID hoặc form của ChatGPT. Night, Forest và Sakura giữ màu pixel cũ.
+- Đã cập nhật cả tiện ích, userscript và ZIP cài sẵn. Nếu đã cài v1.1.0, tải lại bộ cài, thay thư mục `extension`, bấm **Reload** ở trang tiện ích rồi tải lại tab AI. Tampermonkey: cài đè userscript v1.1.1.
+
 ## Bản 1.1.0
 
 - Bảng chọn cảnh dùng chính ba hình trong mẫu đã duyệt, với viền cyan, dấu tick, nền indigo và công tắc tròn như ảnh tham chiếu.
@@ -15,7 +21,7 @@ Theme pixel cho **ChatGPT, Codex web và Claude**: trời đêm, trăng khuyết
 - Có **Upload image**: chọn ảnh từ máy tính, dùng **Fill screen** để phủ kín hoặc **Fit image** để thấy trọn ảnh. **Use image** chọn lại ảnh đã lưu; **Remove** xóa ảnh đó và trở về Night.
 - Ảnh riêng chỉ lưu trên trình duyệt; không gửi lên GitHub hay máy chủ. Trình duyệt thu gọn ảnh về tối đa 2048px cạnh dài để tiết kiệm kho lưu trữ. Hỗ trợ ảnh mà trình duyệt đọc được, gồm JPG, PNG, WebP, GIF, SVG và AVIF; GIF dùng khung hình tĩnh. File đầu vào tối đa 32 MB.
 
-**Cập nhật từ bản 1.0.0:** thay toàn bộ thư mục `extension` cũ bằng thư mục trong bộ cài mới, bấm **Reload** tại trang tiện ích, rồi tải lại ChatGPT/Claude. Với Tampermonkey, cài đè bản 1.1.0 để trình quản lý tải đủ các tài nguyên ảnh mới.
+**Cập nhật từ bản 1.0.0:** thay toàn bộ thư mục `extension` cũ bằng thư mục trong bộ cài mới, bấm **Reload** tại trang tiện ích, rồi tải lại ChatGPT/Claude. Với Tampermonkey, cài đè bản 1.1.1 để trình quản lý tải đủ các tài nguyên ảnh mới.
 
 ## Cài đặt
 
@@ -113,6 +119,8 @@ npm test
 `src/` là mã nguồn. `extension/theme.js` và `themeai.user.js` được sinh từ cùng một runtime, tránh hai bản lệch tính năng. `src/landscapes.mjs` khai báo màu, các lớp vector nhỏ và tọa độ lấy hình từ mẫu đã duyệt; bốn ảnh WebP thực nằm trong `extension/assets/`. Các WebP được chuyển mã lossless từ ảnh nguồn. File ZIP cài sẵn nằm trong `downloads/`. Build không phụ thuộc dịch vụ bên ngoài. File icon PNG được sinh bằng `scripts/package.py` và đã được commit sẵn.
 
 ### Kiểm chứng
+
+Riêng v1.1.1 đã bổ sung kiểm thử kính mờ cho DOM mô phỏng ChatGPT, Codex (textarea không ID/form) và Claude: độ trong suốt, blur, lớp ô nhập lồng nhau, token màu/HSL, toolbar/menu, giữ code và màu trạng thái, gửi nội dung, màn hình hẹp, điều hướng SPA, đổi preset và tắt theme. Ảnh đã lưu vẫn bật kính mờ sau reload; thiếu ảnh sẽ trở về Night.
 
 Đã kiểm thử runtime trong Chromium trên các trang DOM mô phỏng ChatGPT và Claude: thay palette, lưu cài đặt, adapter đồng bộ giữa hai origin, giảm chuyển động, tắt/khôi phục nền gốc, giữ nguyên input/code, form/menu gốc, điều hướng SPA, tránh chèn trùng, bảng cài đặt ở viewport 390px, trường hợp kho lưu bị chặn/hỏng, cùng luồng tải ảnh từ máy, lưu ảnh sau reload, đổi cách lấp nền, xử lý file hỏng, chọn lại và xóa ảnh riêng. Demo đã được kiểm tra trực quan ở desktop và màn hình hẹp.
 

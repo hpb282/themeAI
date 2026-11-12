@@ -45,4 +45,6 @@ Mở Pixel Studio → **Upload image** → chọn ảnh. **Fill screen** phủ k
 
 Các mục Bật theme, Chuyển động, Khôi phục mặc định và Chuyển góc nằm trong **More settings**.
 
-Khi cập nhật từ v1.0.0, thay toàn bộ thư mục extension rồi Reload tiện ích và tải lại tab. Tampermonkey: cài đè userscript v1.1.0 để trình quản lý tải các ảnh @resource từ repo này khi cập nhật.
+**Từ v1.1.1:** chọn ảnh riêng sẽ tự bật giao diện **liquid glass** cho ô nhập, thanh công cụ, sidebar và bảng cài đặt: nền trong suốt hơi mờ, viền sáng nhẹ và góc bo mềm. Chọn lại Night/Forest/Sakura để trở về màu pixel.
+
+Khi cập nhật từ v1.0.0 hoặc v1.1.0, tải lại ZIP và thay toàn bộ thư mục extension rồi Reload tiện ích và tải lại tab. Tampermonkey: cài đè userscript v1.1.1 để trình quản lý tải các ảnh @resource từ repo này khi cập nhật.
