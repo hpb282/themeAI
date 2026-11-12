@@ -38,3 +38,11 @@ Tắt **Bật theme pixel** để trở lại màu gốc. Muốn gỡ hẳn: Rem
 Dành cho ChatGPT, Codex web và Claude tại các domain được ghi trong README. Không áp dụng cho ứng dụng desktop, điện thoại hay terminal. Nên dùng chế độ tối của ứng dụng AI.
 
 Theme không đọc nội dung chat, không có yêu cầu mạng. Đây là theme bên thứ ba. Website thay đổi cấu trúc có thể cần cập nhật adapter CSS. Xem README để biết phạm vi đã kiểm thử và hướng dẫn phát triển.
+
+## Ảnh nền từ máy tính (v1.1.0)
+
+Mở Pixel Studio → **Upload image** → chọn ảnh. **Fill screen** phủ kín màn hình; **Fit image** hiển thị trọn ảnh. **Use image** chọn lại ảnh đã lưu sau khi đổi preset; **Remove** xóa ảnh riêng và trở lại Night. Ảnh được xử lý và lưu trên trình duyệt, không gửi lên GitHub/máy chủ. Ảnh được thu gọn tối đa 2048px cạnh dài; GIF dùng một khung hình tĩnh; file nguồn tối đa 32 MB.
+
+Các mục Bật theme, Chuyển động, Khôi phục mặc định và Chuyển góc nằm trong **More settings**.
+
+Khi cập nhật từ v1.0.0, thay toàn bộ thư mục extension rồi Reload tiện ích và tải lại tab. Tampermonkey: cài đè userscript v1.1.0 để trình quản lý tải các ảnh @resource từ repo này khi cập nhật.

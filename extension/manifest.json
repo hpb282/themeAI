@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "ThemeAI — Pixel Studio",
-  "version": "1.0.0",
-  "description": "Pixel Night, Forest và Sakura cho ChatGPT, Codex và Claude. Cảnh động, sao, mây và tia sáng theo chuột.",
+  "version": "1.1.0",
+  "description": "Pixel Night, Forest, Sakura và nền ảnh riêng cho ChatGPT, Codex, Claude. Đồ họa theo mẫu đã duyệt.",
   "permissions": [
     "storage"
   ],
@@ -20,6 +20,20 @@
       ],
       "run_at": "document_idle",
       "all_frames": false
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/*.webp"
+      ],
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*",
+        "https://codex.chatgpt.com/*",
+        "https://codex.com/*",
+        "https://claude.ai/*"
+      ]
     }
   ],
   "icons": {
